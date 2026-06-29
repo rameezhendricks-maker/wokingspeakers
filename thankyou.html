@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Woking Speakers Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="wsc-shared.css">
+</head>
+<body style="justify-content: flex-start; padding: 2rem 1.25rem 3rem;">
+
+<div class="card card--wide">
+
+  <div class="success-banner">
+    <div class="tick">
+      <svg viewBox="0 0 12 12"><polyline points="1.5,6 4.5,9 10.5,3"/></svg>
+    </div>
+    <p>Payment confirmed — you're all set!</p>
+  </div>
+
+  <div class="club-name club-name--sm">Woking Speakers Club</div>
+  <div class="divider divider--sm"></div>
+
+  <h1>Welcome to the club.</h1>
+  <p class="subtitle">
+    We're delighted to have you. Here's everything you need to get started.
+  </p>
+
+  <!-- Next meeting -->
+  <div class="next-meeting">
+    <div class="next-meeting-label">Your first meeting</div>
+    <div class="next-meeting-date" id="next-meeting-date">Calculating…</div>
+    <div class="next-meeting-detail"><span id="meeting-time">7:15 pm</span> · Woking United Reformed Church, White Rose Lane, Woking GU22 7HA</div>
+  </div>
+
+  <!-- Steps -->
+  <p class="steps-heading">What happens next</p>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-body">
+        <div class="step-title">Check your email from Toastmasters International</div>
+        <div class="step-desc">
+          You'll receive a welcome email from Toastmasters International shortly. It contains your login
+          details for <strong>toastmasters.org</strong> — keep it handy.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-body">
+        <div class="step-title">Log in and choose your Pathways learning path</div>
+        <div class="step-desc">
+          Pathways is the Toastmasters education programme — a self-paced series of projects that build your
+          speaking and leadership skills. Log in at
+          <a href="https://www.toastmasters.org/login" target="_blank" rel="noopener">toastmasters.org/login</a>
+          and pick the path that interests you most. There's no wrong choice.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-body">
+        <div class="step-title">Complete your Ice Breaker speech</div>
+        <div class="step-desc">
+          Your first Pathways project is the Ice Breaker — a short speech about yourself. It's a great way
+          to introduce yourself to the club and get your first speech under your belt.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-body">
+        <div class="step-title">Come along to your first meeting</div>
+        <div class="step-desc">
+          No preparation needed for your first visit. Just turn up, watch how a meeting runs, and meet
+          the club. We meet every other Tuesday — see the date above.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Contact -->
+  <p class="steps-heading">Questions?</p>
+  <div class="contact-box">
+    <img class="contact-avatar-img" src="images/rameez.jpg" alt="Rameez">
+    <div class="contact-info">
+      <strong>Rameez</strong>
+      <p>VP Membership · happy to help with anything</p>
+      <a href="mailto:rameezhendrix@gmail.com">rameezhendrix@gmail.com</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <a href="/">Back to wokingspeakers.org.uk</a>
+</div>
+
+<script src="wsc-config.js"></script>
+<script>
+  const CFG = window.WSC_CONFIG;
+
+  function isCancelled(date) {
+    const yyyy = date.getFullYear();
+    const mm   = String(date.getMonth() + 1).padStart(2, '0');
+    const dd   = String(date.getDate()).padStart(2, '0');
+    return (CFG.cancelledDates || []).includes(`${yyyy}-${mm}-${dd}`);
+  }
+
+  function getNextMeeting() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const meetDay   = CFG.meetingDay   ?? 4;
+    const meetWeeks = CFG.meetingWeeks ?? [2, 4];
+    const d = new Date(now.getFullYear(), now.getMonth(), 1);
+    for (let i = 0; i < 24; i++) {
+      const year  = d.getFullYear();
+      const month = d.getMonth();
+      const first = new Date(year, month, 1);
+      const offset = (meetDay - first.getDay() + 7) % 7;
+      const firstOccurrence = 1 + offset;
+      for (const week of meetWeeks) {
+        const td = new Date(year, month, firstOccurrence + (week - 1) * 7);
+        if (td >= now && !isCancelled(td)) return td;
+      }
+      d.setMonth(d.getMonth() + 1);
+    }
+    return null;
+  }
+
+  function formatDate(d) {
+    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+    return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  const next = getNextMeeting();
+  document.getElementById('next-meeting-date').textContent = next ? formatDate(next) : 'See wokingspeakers.org.uk for dates';
+  const timeEl = document.getElementById('meeting-time');
+  if (timeEl) timeEl.textContent = CFG.meetingTime || '7:15 pm';
+</script>
+
+</body>
+</html>
